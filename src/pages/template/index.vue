@@ -14,41 +14,13 @@
 			</div>
 			<div style="height: 40px;" 
 			class="d-flex align-items-center">
-				<Checkbox size="small"><span class="ml-3">全选</span></Checkbox>
+				<Checkbox size="small" :value="checkAllStatus" @on-change="checkAllChange"><span class="ml-3">全选</span></Checkbox>
 			</div>
 		</div>
 		
 		<div style="position: absolute;overflow-y: auto;left: 0;right: 0;top: 90px;bottom: 55px;">
 			
-			<div class="border-bottom px-3 py-2">
-				<Row>
-					<Col span="12" class="d-flex align-items-center">
-						<Checkbox size="small" class="mb-0 mr-3"></Checkbox>
-						<i class="iconfont icon-file-b-2 text-warning mr-3" style="font-size: 28px;"></i>
-						<small>我的目录</small>
-						
-						<div class="ml-auto text-primary">
-							<Tooltip content="分享" 
-							placement="bottom">
-							    <Icon type="md-share" size="18" class="mx-2" style="cursor: pointer;"/>
-							</Tooltip>
-							<Tooltip content="下载"
-							placement="bottom">
-							    <Icon type="md-cloud-download" size="18" class="mx-2" style="cursor: pointer;"/>
-							</Tooltip>
-							 <Dropdown>
-								<Icon type="ios-more" size="18" class="mx-2" style="cursor: pointer;"/>
-								<DropdownMenu slot="list">
-									<DropdownItem>重命名</DropdownItem>
-									<DropdownItem>删除</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
-						</div>
-					</Col>
-					<Col span="6" style="height: 42px;" class="d-flex align-items-center">-</Col>
-					<Col span="6" style="height: 42px;" class="d-flex align-items-center"><small class="text-secondary">2019-12-15 08:00</small></Col>
-				</Row>
-			</div>
+			<media-list v-for="(item,index) in list" :key="index" :item="item" :index="index" @on-event="handleEvent"></media-list>
 			
 		</div>
 		
@@ -60,30 +32,110 @@
 </template>
 
 <script>
-	const icons = {
-		dir:{
-			icon:"icon-file-b-2",
-			color:"text-warning"
-		},
-		image:{
-			icon:"icon-file-b-6",
-			color:"text-success"
-		},
-		video:{
-			icon:"icon-file-b-9",
-			color:"text-primary"
-		},
-		text:{
-			icon:"icon-file-s-7",
-			color:"text-info"
-		},
-		none:{
-			icon:"icon-file-b-8",
-			color:"text-muted"
-		},
-	};
+	import mediaList from '@/components/media-list.vue';
 	export default {
-		
+		components: {
+			mediaList
+		},
+		data() {
+			return {
+				list:[{
+					type:"dir",
+					name:"我的笔记",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				},{
+					type:"dir",
+					name:"我的备份",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				},{
+					type:"dir",
+					name:"相册管理",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				},{
+					type:"dir",
+					name:"我的资源",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				},{
+					type:"image",
+					name:"风景.jpg",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/1.jpg"
+				},{
+					type:"image",
+					name:"海报.jpg",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/2.jpg"
+				},{
+					type:"video",
+					name:"uniapp实战社区交友教程.mp4",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://douyinzcmcss.oss-cn-shenzhen.aliyuncs.com/%E8%AF%BE%E6%97%B61.%20%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.mp4"
+				},{
+					type:"video",
+					name:"uniapp实战商城教程.mp4",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://douyinzcmcss.oss-cn-shenzhen.aliyuncs.com/%E8%AF%BE%E6%97%B61.%20%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.mp4"
+				},{
+					type:"video",
+					name:"uniapp实战仿微信教程.mp4",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://douyinzcmcss.oss-cn-shenzhen.aliyuncs.com/%E8%AF%BE%E6%97%B61.%20%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.mp4"
+				},{
+					type:"image",
+					name:"摄影.jpg",
+					create_time:"2019-12-15 08:00",
+					checked:false,
+					url:"https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/3.jpg"
+				},{
+					type:"text",
+					name:"记事本.txt",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				},{
+					type:"none",
+					name:"压缩包.rar",
+					create_time:"2019-12-15 08:00",
+					checked:false
+				}],
+			}
+		},
+		computed: {
+			checkList() {
+				return this.list.filter(item=>item.checked)
+			},
+			checkAllStatus(){
+				return this.checkList.length === this.list.length
+			}
+		},
+		methods: {
+			handleEvent(e) {
+				switch (e.type){
+					case 'delete':
+					this.list.splice(e.index,1)
+					this.$Message.success('删除成功');
+						break;
+					case 'checked':
+					this.list[e.index].checked = e.value
+						break;
+					default:
+						break;
+				}
+			},
+			checkAllChange(e){
+				this.list.map(item=>{
+					item.checked = e
+				})
+			}
+		},
 	}
 </script>
 
